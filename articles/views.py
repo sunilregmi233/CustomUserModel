@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views.generic import ListView , DetailView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from django.urls import reverse_lazy
-from .models import Article
+from .models import Article, Comment
 # Create your views here.
 
 
@@ -54,3 +54,27 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
+
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    template_name = 'comment_new.html'
+    fields = ('article', 'comment', 'author',)
+    success_url = reverse_lazy('article_list')
+    login_url = 'login' # new
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+class CommentDeleteView(LoginRequiredMixin, DeleteView):
+    model = Comment
+    template_name = 'comment_delete.html'
+    success_url = reverse_lazy('article_list')
+    login_url = 'login'
+
+    def dispatch(self, request, *args, **kwargs): # new
+        obj = self.get_object()
+        if obj.author != self.request.user:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
