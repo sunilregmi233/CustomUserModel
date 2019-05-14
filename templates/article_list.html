@@ -14,10 +14,20 @@
                 <span class="text-muted"> by {{ article.author }} | {{ article.date }}</span>
             </div>
             <div class="caed-body">
-                {{ article.body }}
+               <p> {{ article.body }}</p>
             </div>
             <div class="card-footer text-center text-muted">
-                <a href="{% url 'article_edit' article.pk %}">Edit</a> | <a href="{% url 'article_delete' article.pk %}">Delete</a>
+                <a href="{% url 'article_edit' article.pk %}">Edit</a> | 
+                <a href="{% url 'article_delete' article.pk %}">Delete</a>
+            </div>
+            <div class="card-footer">
+                {% for comment in article.comments.all %}
+                    <p>
+                        <h5>Comments:</h5>
+                        <span class="font-weight-bold">{{ comment.author }} &middot;</span>
+                        {{ comment }}
+                    </p>
+                {% endfor %}
             </div>
         </div>
         <br />
